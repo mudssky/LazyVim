@@ -1,8 +1,8 @@
 -- 用户自定义选项设置
 -- 文件位置: %LOCALAPPDATA%\nvim\lua\config\options.lua
 
--- 配置加载提示
-vim.notify("⚙️ 正在加载用户自定义选项配置...", vim.log.levels.INFO, { title = "MyConfig" })
+-- 配置加载提示（已移除，避免影响启动速度）
+-- vim.notify("⚙️ 正在加载用户自定义选项配置...", vim.log.levels.INFO, { title = "MyConfig" })
 
 local opt = vim.opt
 
@@ -39,4 +39,4 @@ end
 -- opt.termguicolors = true -- 启用真彩色
 -- opt.signcolumn = "yes" -- 始终显示符号列
 
-vim.notify("✓ 用户自定义选项配置加载完成", vim.log.levels.INFO, { title = "MyConfig" })
+-- vim.notify("✓ 用户自定义选项配置加载完成", vim.log.levels.INFO, { title = "MyConfig" })
