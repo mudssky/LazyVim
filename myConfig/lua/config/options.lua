@@ -1,6 +1,9 @@
 -- 用户自定义选项设置
 -- 文件位置: %LOCALAPPDATA%\nvim\lua\config\options.lua
 
+-- 配置加载提示
+vim.notify("⚙️ 正在加载用户自定义选项配置...", vim.log.levels.INFO, { title = "MyConfig" })
+
 local opt = vim.opt
 
 
@@ -8,7 +11,8 @@ local opt = vim.opt
 if vim.fn.has("win32") == 1 then
   -- 设置默认 shell 为 PowerShell 7+
   vim.opt.shell = "pwsh"
-  vim.opt.shellcmdflag = "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';"
+  vim.opt.shellcmdflag =
+  "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';"
   vim.opt.shellredir = '2>&1 | %%{ "$_" } | Out-File %s; exit $LastExitCode'
   vim.opt.shellpipe = '2>&1 | %%{ "$_" } | Tee-Object %s; exit $LastExitCode'
   vim.opt.shellquote = ""
@@ -34,3 +38,5 @@ end
 -- 示例：外观设置
 -- opt.termguicolors = true -- 启用真彩色
 -- opt.signcolumn = "yes" -- 始终显示符号列
+
+vim.notify("✓ 用户自定义选项配置加载完成", vim.log.levels.INFO, { title = "MyConfig" })
