@@ -50,19 +50,17 @@ local myconfig_dir = lazyvim_dir .. "/myConfig"
 vim.opt.rtp:prepend(myconfig_dir)
 
 -- 加载用户自定义配置（在 LazyVim 之前预加载）
-local function load_user_config(module_name)
-  local ok, err = pcall(require, module_name)
-  if ok then
-    vim.notify("✓ 用户配置已加载: " .. module_name, vim.log.levels.INFO, { title = "MyConfig" })
-  else
-    vim.notify("⚠ 用户配置加载失败: " .. module_name .. " (" .. tostring(err) .. ")", vim.log.levels.WARN, { title = "MyConfig" })
-  end
-  return ok
-end
+-- local function load_user_config(module_name)
+--  local ok, err = pcall(require, module_name)
+--  if not ok then
+--    vim.notify("⚠ 用户配置加载失败: " .. module_name .. " (" .. tostring(err) .. ")", vim.log.levels.WARN, { title = "MyConfig" })
+-- end
+--  return ok
+-- end
 
-load_user_config("config.options")
-load_user_config("config.keymaps")
-load_user_config("config.autocmds")
+-- load_user_config("config.options")
+-- load_user_config("config.keymaps")
+-- load_user_config("config.autocmds")
 
 -- 设置 lazy.nvim 并加载 LazyVim
 require("lazy").setup({
@@ -99,20 +97,24 @@ require("lazy").setup({
 
 -- LazyVim 加载完成后的后处理
 vim.schedule(function()
-  vim.notify("✓ LazyVim 已从本地目录成功加载: " .. lazyvim_dir, vim.log.levels.INFO, { title = "LazyVim" })
-  vim.notify("✓ 个人配置目录: " .. myconfig_dir, vim.log.levels.INFO, { title = "MyConfig" })
-  
+  -- 定义项目本地配置目录
+  local myconfig_dir = lazyvim_dir .. "/myConfig"
+  vim.opt.rtp:prepend(myconfig_dir)
   -- 确保个人配置在 LazyVim 之后再次应用
   local function post_load_user_config(module_name)
     local ok, err = pcall(require, module_name)
-    if ok then
-      vim.notify("✓ 个人配置后加载成功: " .. module_name, vim.log.levels.INFO, { title = "MyConfig" })
+    if not ok then
+      vim.notify("⚠ 个人配置后加载失败: " .. module_name .. " (" .. tostring(err) .. ")", vim.log.levels.WARN, { title = "MyConfig" })
     end
   end
   
   -- 重新加载关键配置以确保覆盖 LazyVim 默认设置
   post_load_user_config("config.options")
+  post_load_user_config("config.keymaps")
   post_load_user_config("config.autocmds")
+
+
+
 end)
 "@
 
