@@ -3,7 +3,7 @@
 
 -- 配置加载提示（已移除，避免影响启动速度）
 -- vim.notify("⚙️ 正在加载用户自定义选项配置...", vim.log.levels.INFO, { title = "MyConfig" })
-
+local utils = require("utils")
 local opt = vim.opt
 
 
@@ -19,6 +19,17 @@ if vim.fn.has("win32") == 1 then
   vim.opt.shellxquote = ""
 end
 
+
+local function neovide_config()
+  if vim.g.neovide then
+    vim.o.guifont = 'FiraCode_Nerd_Font'
+    vim.g.neovide_cursor_vfx_mode = 'railgun'
+    -- 关闭snack的所有动画
+    vim.g.snacks_animate = false
+  end
+end
+
+neovide_config()
 
 -- 示例：编辑器设置
 -- opt.relativenumber = true -- 显示相对行号
