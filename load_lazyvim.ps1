@@ -52,6 +52,7 @@ vim.opt.rtp:prepend(myconfig_dir)
 -- 加载用户自定义配置
 pcall(require, "config.options")
 pcall(require, "config.keymaps")
+pcall(require, "config.autocmds")
 
 -- 设置 lazy.nvim 并加载 LazyVim
 require("lazy").setup({
