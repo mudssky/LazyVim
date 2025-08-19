@@ -15,7 +15,7 @@ local autocmd = vim.api.nvim_create_autocmd
 local function custom_autocmd()
   local ok, _ = pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
   if not ok then
-    print("lazyvim_wrap_spell 不存在")
+    -- print("lazyvim_wrap_spell 不存在")
   end
 end
 -- if utils.is_vscode() then
