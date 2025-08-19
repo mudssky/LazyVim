@@ -106,14 +106,11 @@ vim.schedule(function()
     if not ok then
       vim.notify("⚠ 个人配置后加载失败: " .. module_name .. " (" .. tostring(err) .. ")", vim.log.levels.WARN, { title = "MyConfig" })
     end
-  end
-  
-  -- 重新加载关键配置以确保覆盖 LazyVim 默认设置
+      -- 重新加载关键配置以确保覆盖 LazyVim 默认设置
   post_load_user_config("config.options")
   post_load_user_config("config.keymaps")
   post_load_user_config("config.autocmds")
-
-
+  end
 
 end)
 "@
