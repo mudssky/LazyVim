@@ -18,14 +18,15 @@ local function custom_autocmd()
     print("lazyvim_wrap_spell 不存在")
   end
 end
-if utils.is_vscode() then
-  autocmd('Syntax', {
-    group = augroup('wrap_spell'),
-    callback = function()
-      custom_autocmd()
-    end
-  })
-end
+-- if utils.is_vscode() then
+-- 所有模式都关掉拼写检查
+autocmd('Syntax', {
+  group = augroup('wrap_spell'),
+  callback = function()
+    custom_autocmd()
+  end
+})
+-- end
 -- 禁用 LazyVim 的拼写检查自动命令组
 -- vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 -- vim.notify("✓ 已禁用 LazyVim 拼写检查自动命令组 (wrap_spell)", vim.log.levels.INFO, { title = "MyConfig" })
