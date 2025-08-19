@@ -13,17 +13,21 @@ local autocmd = vim.api.nvim_create_autocmd
 
 -- 修改lazyvim autocmd 相关配置
 local function custom_autocmd()
-  local ok, _ = pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
-  if not ok then
-    -- print("lazyvim_wrap_spell 不存在")
-  end
+  vim.opt_local.spell = false
+  -- local ok, _ = pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
+  -- if not ok then
+  --   -- print("lazyvim_wrap_spell 不存在")
+  -- end
 end
 -- if utils.is_vscode() then
 -- 所有模式都关掉拼写检查
-autocmd('Syntax', {
+autocmd('FileType', {
   group = augroup('wrap_spell'),
   callback = function()
-    custom_autocmd()
+    -- 确保在lazyvim的autocmd之后执行
+    vim.schedule(function()
+      custom_autocmd()
+    end)
   end
 })
 
