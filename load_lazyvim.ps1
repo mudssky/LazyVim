@@ -5,7 +5,8 @@
 
 # 动态计算LazyVim路径（基于脚本位置）
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$LazyVimPath = Join-Path $ScriptDir "lua\lazyvim\init.lua"
+# 使用跨平台路径分隔符
+$LazyVimPath = Join-Path $ScriptDir "lua/lazyvim/init.lua"
 
 # 检查文件是否存在
 if (-not (Test-Path $LazyVimPath)) {
@@ -19,7 +20,7 @@ $NvimScript = @"
 -- 正确引导 lazy.nvim 和 LazyVim
 
 -- LazyVim目录（由PowerShell脚本动态计算并传入）
-local lazyvim_dir = "$($ScriptDir.Replace('\', '\\'))"
+local lazyvim_dir = "$($ScriptDir.Replace('\', '/'))"
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -115,8 +116,18 @@ vim.schedule(function()
 end)
 "@
 
-# 获取Neovim配置目录
-$NvimConfigDir = "$env:LOCALAPPDATA\nvim"
+# 获取Neovim配置目录（跨平台兼容）
+if ($IsMacOS -or $IsLinux) {
+  $NvimConfigDir = "~/.config/nvim"
+} else {
+  $NvimConfigDir = "$env:LOCALAPPDATA\nvim"
+}
+
+# 展开路径中的波浪号
+if ($NvimConfigDir.StartsWith("~")) {
+  $NvimConfigDir = $NvimConfigDir -replace "^~", $HOME
+}
+
 if (-not (Test-Path $NvimConfigDir)) {
   New-Item -ItemType Directory -Path $NvimConfigDir -Force
   Write-Information "创建Neovim配置目录: $NvimConfigDir" -InformationAction Continue
