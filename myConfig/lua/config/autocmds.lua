@@ -13,8 +13,8 @@ local autocmd = vim.api.nvim_create_autocmd
 
 -- 修改lazyvim autocmd 相关配置
 local function custom_autocmd()
-  vim.opt_local.spell = false
-  -- local ok, _ = pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
+  -- vim.opt_local.spell = false
+  pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
   -- if not ok then
   --   -- print("lazyvim_wrap_spell 不存在")
   -- end
@@ -26,8 +26,7 @@ autocmd('FileType', {
   callback = function()
     -- 确保在lazyvim的autocmd之后执行
     vim.schedule(function()
-      vim.fn.timer_start(50, custom_autocmd)
-      -- vim.opt_local.spell = false
+      custom_autocmd()
     end)
   end
 })
