@@ -26,7 +26,8 @@ autocmd('FileType', {
   callback = function()
     -- 确保在lazyvim的autocmd之后执行
     vim.schedule(function()
-      custom_autocmd()
+      vim.fn.timer_start(50, custom_autocmd)
+      -- vim.opt_local.spell = false
     end)
   end
 })
