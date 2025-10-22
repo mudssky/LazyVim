@@ -56,7 +56,7 @@ to tweak your config as needed, along with the convenience of a pre-configured s
 
 ## ⚡️ Requirements
 
-- Neovim >= **0.9.0** (needs to be built with **LuaJIT**)
+- Neovim >= **0.11.2** (needs to be built with **LuaJIT**)
 - Git >= **2.19.0** (for partial clones support)
 - a [Nerd Font](https://www.nerdfonts.com/) **_(optional)_**
 - a **C** compiler for `nvim-treesitter`. See [here](https://github.com/nvim-treesitter/nvim-treesitter#requirements)
@@ -110,10 +110,6 @@ docker run -w /root -it --rm alpine:edge sh -uelic '
 </details>
 
 ---
-
-There's a great video created by [@elijahmanor](https://github.com/elijahmanor) with a walkthrough to get started.
-
-[![Watch the video](https://img.youtube.com/vi/N93cTbtLCIM/hqdefault.jpg)](https://www.youtube.com/watch?v=N93cTbtLCIM)
 
 [@dusty-phillips](https://github.com/dusty-phillips) wrote a comprehensive book called
 [LazyVim for Ambitious Developers](https://lazyvim-ambitious-devs.phillips.codes)
