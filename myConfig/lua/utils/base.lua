@@ -7,23 +7,7 @@
 
 local M = {}
 
--- VSCode 命令调用辅助函数
--- 只在 VSCode 环境中可用
-M.vscode = function(command, arg)
-  return function()
-    if vim.g.vscode then
-      local vs = require("vscode")
-      if arg ~= nil then
-        local args = type(arg) == "function" and arg() or arg
-        vs.call(command, args)
-      else
-        vs.action(command)
-      end
-    else
-      vim.notify("VSCode 命令只能在 VSCode 环境中使用: " .. command, vim.log.levels.WARN)
-    end
-  end
-end
+-- 已弃用: M.vscode（请使用 M.vscode_call）
 
 -- 检查是否在 VSCode 环境中
 M.is_vscode = function()
@@ -38,6 +22,36 @@ M.safe_require = function(module)
     return nil
   end
   return result
+end
+
+M.vscode_call = function(command, opts)
+  opts = opts or {}
+  if not vim.g.vscode then
+    if not opts.silent then
+      vim.notify("VSCode 命令只能在 VSCode 环境中使用: " .. command, vim.log.levels.WARN)
+    end
+    return false
+  end
+  local vs = M.safe_require("vscode")
+  if not vs then
+    return false
+  end
+  local args = opts.args
+  if type(args) == "function" then
+    local ok, res = pcall(args)
+    if ok then
+      args = res
+    else
+      vim.notify("VSCode 参数函数执行失败: " .. command, vim.log.levels.ERROR)
+      return false
+    end
+  end
+  if args == nil then
+    vs.action(command)
+  else
+    vs.call(command, args)
+  end
+  return true
 end
 
 -- 检查插件是否可用
