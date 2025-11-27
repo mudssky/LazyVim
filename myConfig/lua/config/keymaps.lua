@@ -26,6 +26,17 @@ local function vscode_keymap()
     -- whichkey 插件配置
     keymap("n", leader_key, vscode("whichkey.show"), { desc = "Show WhichKey" })
     keymap("v", leader_key, vscode("whichkey.show"), { desc = "Show WhichKey" })
+
+    -- 支持文件名跳转
+    keymap('n', 'gf', function()
+      local cfile = vim.fn.expand('<cfile>')
+      vim.notify("Lua 脚本已捕获: " .. cfile)
+      vim.schedule(function()
+        vim.notify("VSCode 已触发: workbench.action.quickOpen " .. cfile)
+        -- 注意：这里传入 filename 作为参数，VS Code 会把它填入搜索框
+        require("vscode").call('workbench.action.quickOpen', { args = { cfile } })
+      end)
+    end)
   end
 end
 
