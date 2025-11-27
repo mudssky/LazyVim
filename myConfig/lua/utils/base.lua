@@ -26,16 +26,16 @@ end
 
 M.vscode_call = function(command, opts)
   opts = opts or {}
+
+  -- 1. 环境检查
   if not vim.g.vscode then
     if not opts.silent then
       vim.notify("VSCode 命令只能在 VSCode 环境中使用: " .. command, vim.log.levels.WARN)
     end
     return false
   end
-  local vs = M.safe_require("vscode")
-  if not vs then
-    return false
-  end
+
+  -- 2. 参数处理 (支持函数动态获取参数)
   local args = opts.args
   if type(args) == "function" then
     local ok, res = pcall(args)
@@ -46,14 +46,31 @@ M.vscode_call = function(command, opts)
       return false
     end
   end
-  if args == nil then
-    vs.action(command)
+
+  -- 3. 核心修改：判断是否需要等待结果
+  -- 如果 opts.wait 未定义，默认为 true (保持原有行为)
+  -- 如果显式传入 wait = false，则使用 VSCodeNotify
+  local wait = opts.wait
+  if wait == nil then wait = true end
+
+  if not wait then
+    -- [非阻塞模式] 发送命令不等待返回，完美解决 quickOpen 报错问题
+    -- VSCodeNotify 第二个参数如果为 nil 会自动忽略
+    vim.fn.VSCodeNotify(command, args)
   else
-    vs.call(command, args)
+    -- [阻塞模式] 等待 VS Code 返回结果
+    local vs = M.safe_require("vscode")
+    if not vs then return false end
+
+    if args == nil then
+      vs.action(command)
+    else
+      vs.call(command, args)
+    end
   end
+
   return true
 end
-
 -- 检查插件是否可用
 M.has_plugin = function(plugin_name)
   local ok, _ = pcall(require, plugin_name)
