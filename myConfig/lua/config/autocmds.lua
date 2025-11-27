@@ -44,7 +44,7 @@ autocmd('FileType', {
 -- 按下Ctrl+1: 普通文本 -> # 一级标题
 -- 再次按下Ctrl+1: # 一级标题 -> 普通文本
 -- 按下Ctrl+2: # 一级标题 -> ## 二级标题
-
+-- ! 注意，可能会和终端或者vscode 终端的快捷键冲突导致不生效
 autocmd('FileType', {
   pattern = 'markdown',
   group = augroup('markdown'),

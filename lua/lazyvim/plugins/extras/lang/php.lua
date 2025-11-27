@@ -48,11 +48,10 @@ return {
     optional = true,
     opts = function()
       local dap = require("dap")
-      local path = require("mason-registry").get_package("php-debug-adapter"):get_install_path()
       dap.adapters.php = {
         type = "executable",
-        command = "node",
-        args = { path .. "/extension/out/phpDebug.js" },
+        command = "php-debug-adapter",
+        args = {},
       }
     end,
   },
@@ -81,6 +80,23 @@ return {
     opts = {
       formatters_by_ft = {
         php = { "php_cs_fixer" },
+      },
+    },
+  },
+
+  {
+    "nvim-neotest/neotest",
+    optional = true,
+    dependencies = {
+      "V13Axel/neotest-pest",
+      "olimorris/neotest-phpunit",
+    },
+    opts = {
+      adapters = {
+        "neotest-pest",
+        ["neotest-phpunit"] = {
+          root_ignore_files = { "tests/Pest.php" },
+        },
       },
     },
   },
