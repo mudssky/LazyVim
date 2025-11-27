@@ -21,11 +21,11 @@ local keymap = vim.keymap.set
 -- 定义 VSCode 键位映射
 local function vscode_keymap()
   if utils.is_vscode() then
-    local vscode = utils.vscode
+    local vscode_call = utils.vscode_call
     local leader_key = "<space>"
     -- whichkey 插件配置
-    keymap("n", leader_key, vscode("whichkey.show"), { desc = "Show WhichKey" })
-    keymap("v", leader_key, vscode("whichkey.show"), { desc = "Show WhichKey" })
+    keymap("n", leader_key, function() vscode_call("whichkey.show") end, { desc = "Show WhichKey" })
+    keymap("v", leader_key, function() vscode_call("whichkey.show") end, { desc = "Show WhichKey" })
 
     -- 支持文件名跳转
     keymap('n', 'gf', function()
@@ -34,7 +34,7 @@ local function vscode_keymap()
       vim.schedule(function()
         vim.notify("VSCode 已触发: workbench.action.quickOpen " .. cfile)
         -- 注意：这里传入 filename 作为参数，VS Code 会把它填入搜索框
-        require("vscode").call('workbench.action.quickOpen', { args = { cfile } })
+        vscode_call('workbench.action.quickOpen', { args = { cfile } })
       end)
     end)
   end
