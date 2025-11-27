@@ -34,7 +34,7 @@ local function vscode_keymap()
       vim.schedule(function()
         vim.notify("VSCode 已触发: workbench.action.quickOpen " .. cfile)
         -- 注意：这里传入 filename 作为参数，VS Code 会把它填入搜索框
-        vscode_call('workbench.action.quickOpen', { args = { cfile } })
+        vscode_call('workbench.action.quickOpen', { args = cfile, wait = false })
       end)
     end)
   end
