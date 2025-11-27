@@ -1,72 +1,27 @@
 -- -----------------------------------------------------------------------------
 -- 文件: utils/init.lua
--- 描述: 通用工具函数
+-- 描述: 通用工具函数聚合模块
 -- 作者: mudssky
 -- 更新: 2024
 -- -----------------------------------------------------------------------------
 
-local M = {}
+local M = require("utils.base")
 
--- VSCode 命令调用辅助函数
--- 只在 VSCode 环境中可用
-M.vscode = function(command, arg)
-  return function()
-    if vim.g.vscode then
-      local vs = require("vscode")
-      if arg ~= nil then
-        local args = type(arg) == "function" and arg() or arg
-        vs.call(command, args)
-      else
-        vs.action(command)
-      end
-    else
-      vim.notify("VSCode 命令只能在 VSCode 环境中使用: " .. command, vim.log.levels.WARN)
-    end
-  end
-end
+-- 获取原始的 vscode 函数
+local vscode_func = M.vscode
 
--- 检查是否在 VSCode 环境中
-M.is_vscode = function()
-  return vim.g.vscode ~= nil
-end
+-- 创建子模块表
+local vscode_modules = {
+  edit = require("utils.vscode.edit"),
+  search = require("utils.vscode.search"),
+}
 
--- 安全地尝试加载模块
-M.safe_require = function(module)
-  local ok, result = pcall(require, module)
-  if not ok then
-    vim.notify("无法加载模块: " .. module, vim.log.levels.ERROR)
-    return nil
-  end
-  return result
-end
-
--- 检查插件是否可用
-M.has_plugin = function(plugin_name)
-  local ok, _ = pcall(require, plugin_name)
-  return ok
-end
-
--- 加载插件配置
-M.load_plugin_specs = function()
-  -- 获取插件配置目录的绝对路径
-  local config_path = vim.fn.fnamemodify(debug.getinfo(2, "S").source:sub(2), ":p:h:h")
-  local plugins_path = config_path .. "/plugins"
-
-  -- 手动加载所有插件配置
-  local plugin_specs = {}
-  local plugin_files = vim.fn.glob(plugins_path .. "/*.lua", false, true)
-
-  for _, file in ipairs(plugin_files) do
-    local plugin_name = vim.fn.fnamemodify(file, ":t:r")
-    local ok, plugin_config = pcall(dofile, file)
-    if ok and plugin_config then
-      table.insert(plugin_specs, plugin_config)
-    else
-      vim.notify("Failed to load plugin: " .. plugin_name, vim.log.levels.WARN)
-    end
-  end
-
-  return plugin_specs
-end
+-- 将 M.vscode 替换为一个既可以调用（保持兼容）又包含子模块的 table
+M.vscode = setmetatable(vscode_modules, {
+  __call = function(_, ...)
+    return vscode_func(...)
+  end,
+  -- 如果将来需要动态加载，可以在这里加 __index
+})
 
 return M
