@@ -165,3 +165,17 @@ Write-Information "LazyVim路径: $LazyVimPath" -InformationAction Continue
 Write-Information "" -InformationAction Continue
 Write-Information "现在可以启动Neovim来测试LazyVim是否正确加载。" -InformationAction Continue
 Write-Information "使用命令: nvim" -InformationAction Continue
+
+function Test_ExeProgram() {
+  param(
+    [string]$Name
+  )
+  $result = ($null -ne (Get-Command -Name $Name -CommandType Application -ErrorAction SilentlyContinue))
+  return $result
+}
+
+if (-not (Test_ExeProgram -Name "tree-sitter")) {
+  Write-Information "tree-sitter未安装或未添加到系统路径中" -InformationAction Continue
+  npm install -g tree-sitter-cli
+}
+
