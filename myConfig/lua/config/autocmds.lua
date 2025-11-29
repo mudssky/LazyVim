@@ -21,16 +21,15 @@ local function custom_autocmd()
 end
 -- if utils.is_vscode() then
 -- 所有模式都关掉拼写检查
-autocmd('FileType', {
-  group = augroup('wrap_spell'),
+autocmd("FileType", {
+  group = augroup("wrap_spell"),
   callback = function()
     -- 确保在lazyvim的autocmd之后执行
     vim.schedule(function()
       custom_autocmd()
     end)
-  end
+  end,
 })
-
 
 -- 也可以用lsp的h1代替
 -- 但是中文输入的情况下还是这些快捷键好用
@@ -45,9 +44,9 @@ autocmd('FileType', {
 -- 再次按下Ctrl+1: # 一级标题 -> 普通文本
 -- 按下Ctrl+2: # 一级标题 -> ## 二级标题
 -- ! 注意，可能会和终端或者vscode 终端的快捷键冲突导致不生效
-autocmd('FileType', {
-  pattern = 'markdown',
-  group = augroup('markdown'),
+autocmd("FileType", {
+  pattern = "markdown",
+  group = augroup("markdown"),
   callback = function()
     for i = 1, 6 do
       -- 核心逻辑函数，用于计算新的行内容
@@ -86,7 +85,7 @@ autocmd('FileType', {
         vim.api.nvim_win_set_cursor(0, { row, #prefix })
       end, { buffer = true, desc = "切换/设置 标题 " .. i })
     end
-  end
+  end,
 })
 
 -- 禁用 LazyVim 的拼写检查自动命令组

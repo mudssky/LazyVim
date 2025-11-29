@@ -6,24 +6,22 @@
 local utils = require("utils")
 local opt = vim.opt
 
-
 -- 终端配置 - Windows 下默认使用 PowerShell 7+
 if vim.fn.has("win32") == 1 then
   -- 设置默认 shell 为 PowerShell 7+
   vim.opt.shell = "pwsh"
   vim.opt.shellcmdflag =
-  "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';"
+    "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';"
   vim.opt.shellredir = '2>&1 | %%{ "$_" } | Out-File %s; exit $LastExitCode'
   vim.opt.shellpipe = '2>&1 | %%{ "$_" } | Tee-Object %s; exit $LastExitCode'
   vim.opt.shellquote = ""
   vim.opt.shellxquote = ""
 end
 
-
 local function neovide_config()
   if vim.g.neovide then
-    vim.o.guifont = 'FiraCode_Nerd_Font'
-    vim.g.neovide_cursor_vfx_mode = 'railgun'
+    vim.o.guifont = "FiraCode_Nerd_Font"
+    vim.g.neovide_cursor_vfx_mode = "railgun"
     -- 关闭snack的所有动画
     vim.g.snacks_animate = false
   end
