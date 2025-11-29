@@ -20,7 +20,8 @@ end
 输出: 成功返回模块值; 失败返回 nil 并提示错误
 特殊: 使用 `pcall(require, ...)` 捕获加载期异常, 通过 `vim.notify` 输出错误
 备注: 仅在 Neovim 环境可用, 依赖 `vim.notify` 与 `vim.log.levels`
-]] --
+]]
+--
 M.safe_require = function(module)
   local ok, result = pcall(require, module)
   if not ok then
@@ -46,7 +47,8 @@ end
   1) 环境校验: 非 VSCode 环境直接返回
   2) 参数处理: 若 `args` 为函数则安全执行并取返回值
   3) 模式分支: 根据 `wait` 选择通知或阻塞调用
-]] --
+]]
+--
 M.vscode_call = function(command, opts)
   opts = opts or {}
 
@@ -61,7 +63,8 @@ M.vscode_call = function(command, opts)
   --[[
   参数处理: 支持以函数形式动态生成命令参数, 以便在调用时计算最新上下文。
   若函数执行失败, 立即提示错误并中止调用。
-  ]] --
+  ]]
+  --
   local args = opts.args
   if type(args) == "function" then
     local ok, res = pcall(args)
@@ -77,25 +80,32 @@ M.vscode_call = function(command, opts)
   调用模式选择:
   - 当 `wait` 为 nil 时默认阻塞, 与历史行为保持一致
   - 当 `wait` 为 false 时走非阻塞通知路径, 适合不会返回值的 UI 类命令
-  ]] --
+  ]]
+  --
   local wait = opts.wait
-  if wait == nil then wait = true end
+  if wait == nil then
+    wait = true
+  end
 
   if not wait then
     --[[
     非阻塞通知路径:
     - 通过 `VSCodeNotify` 触发命令, 不等待返回值
     - 第二参数为 nil 时会被 VS Code 端忽略
-    ]] --
+    ]]
+    --
     vim.fn.VSCodeNotify(command, args)
   else
     --[[
     阻塞调用路径:
     - 依赖 `vscode.nvim` 扩展, 若不可用则返回失败
     - 无参数时使用 `action`, 有参数时使用 `call`
-    ]] --
+    ]]
+    --
     local vs = M.safe_require("vscode")
-    if not vs then return false end
+    if not vs then
+      return false
+    end
 
     if args == nil then
       vs.action(command)
@@ -112,7 +122,8 @@ end
 输入: `plugin_name`(string) 形如 `telescope`, `bufferline`
 输出: 返回 boolean, true 表示可 `require`
 特殊: 使用 `pcall(require, ...)` 判断, 不触发加载副作用
-]] --
+]]
+--
 M.has_plugin = function(plugin_name)
   local ok, _ = pcall(require, plugin_name)
   return ok
@@ -130,7 +141,8 @@ end
   1) 解析配置目录路径
   2) 枚举插件文件
   3) 逐个执行并收集返回值
-]] --
+]]
+--
 M.load_plugin_specs = function()
   -- 获取插件配置目录的绝对路径
   -- 注意：如果调用层级发生变化，这里的 debug.getinfo 可能需要调整。

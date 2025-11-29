@@ -12,7 +12,8 @@ local M = {}
 输入: 无
 输出: 无
 特殊: 通过 `vscode_call` 触发 `workbench.action.closeActiveEditor` 命令; 默认阻塞等待
-]] --
+]]
+--
 M.close_editor = function()
   U.vscode_call("workbench.action.closeActiveEditor")
 end
@@ -22,7 +23,8 @@ end
 输入: 无
 输出: 无
 特殊: 触发 `workbench.action.openSettings`; 无需参数
-]] --
+]]
+--
 M.open_settings = function()
   U.vscode_call("workbench.action.openSettings")
 end
@@ -32,7 +34,8 @@ end
 输入: 无
 输出: 无
 特殊: UI 类命令, 如不需等待可在调用处考虑传入 `{wait=false}`
-]] --
+]]
+--
 M.toggle_sidebar = function()
   U.vscode_call("workbench.action.toggleSidebarVisibility")
 end

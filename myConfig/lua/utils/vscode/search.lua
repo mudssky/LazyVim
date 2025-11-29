@@ -12,7 +12,8 @@ local M = {}
 输入: 无
 输出: 无
 特殊: 触发 `workbench.action.findInFiles`; 默认阻塞等待
-]] --
+]]
+--
 M.find_in_files = function()
   U.vscode_call("workbench.action.findInFiles")
 end
@@ -22,7 +23,8 @@ end
 输入: 无
 输出: 无
 特殊: 触发 `workbench.action.replaceInFiles`; UI 命令可在调用处考虑 `{wait=false}`
-]] --
+]]
+--
 M.replace_in_files = function()
   U.vscode_call("workbench.action.replaceInFiles")
 end
