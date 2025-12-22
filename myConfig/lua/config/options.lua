@@ -49,3 +49,24 @@ neovide_config()
 -- opt.signcolumn = "yes" -- 始终显示符号列
 
 -- vim.notify("✓ 用户自定义选项配置加载完成", vim.log.levels.INFO, { title = "MyConfig" })
+
+-- 检测是否处于 SSH 环境
+local is_ssh = os.getenv("SSH_CONNECTION") ~= nil or os.getenv("SSH_CLIENT") ~= nil
+
+-- 只有在 SSH 环境下，且 Neovim 版本足够时，才强制接管剪贴板配置
+if is_ssh and vim.fn.has("nvim-0.10") == 1 then
+  vim.g.clipboard = {
+    name = 'OSC 52',
+    copy = {
+      ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+      ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+    },
+    paste = {
+      ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+      ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+    },
+  }
+end
+
+-- 无论在哪里，都保持使用系统剪贴板寄存器 (+)
+vim.opt.clipboard = "unnamedplus"
