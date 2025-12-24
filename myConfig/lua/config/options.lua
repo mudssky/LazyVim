@@ -55,7 +55,7 @@ local is_ssh = os.getenv("SSH_CONNECTION") ~= nil or os.getenv("SSH_CLIENT") ~= 
 
 -- 只有在 SSH 环境下，且 Neovim 版本足够时，才强制接管剪贴板配置
 -- 在 VSCode 环境下不需要此配置
-if not vim.g.vscode and is_ssh and vim.fn.has("nvim-0.10") == 1 then
+if not utils.is_vscode() and is_ssh and vim.fn.has("nvim-0.10") == 1 then
   vim.g.clipboard = {
     name = "OSC 52",
     copy = {

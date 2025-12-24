@@ -1,7 +1,7 @@
 ---@type LazySpec
 return {
   "mikavilpas/yazi.nvim",
-  cond = not vim.g.vscode, -- 在 VSCode 中禁用
+  cond = not require("utils").is_vscode(), -- 在 VSCode 中禁用
   version = "*", -- use the latest stable version
   event = "VeryLazy",
   dependencies = {

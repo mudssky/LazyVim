@@ -32,8 +32,10 @@ d:\coding\Projects\neovim\LazyVim\
 ## 🚨 Project Specific Constraints
 
 ### 1. Config Scope Isolation
-- **Rule**: 用户的自定义配置 **必须且只能** 在 `myConfig/` 目录下进行。
-- **Exception**: 严禁直接修改 `lua/lazyvim/`。如果必须修改核心行为，应在 `myConfig` 中使用 `vim.tbl_deep_extend` 或 `lazy.nvim` 的 `opts` 进行覆盖。
+- **Allowed Scopes**:
+    - `myConfig/`: 用户自定义 Lua 配置。
+    - `load_lazyvim.ps1`: 启动脚本（仅限维护目的）。
+- **Forbidden**: 严禁修改 `lua/lazyvim/`。如果必须修改核心行为，应在 `myConfig` 中使用 `vim.tbl_deep_extend` 或 `lazy.nvim` 的 `opts` 进行覆盖。
 
 ### 2. Plugin Specification
 - 必须遵循 `lazy.nvim` 的 Spec 格式：
