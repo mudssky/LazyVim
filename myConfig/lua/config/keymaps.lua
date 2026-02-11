@@ -1,8 +1,6 @@
 -- 用户自定义键位映射
--- 文件位置: %LOCALAPPDATA%\nvim\lua\config\keymaps.lua
+-- 文件位置: myConfig/lua/config/keymaps.lua
 
--- 配置加载提示
--- vim.notify("⌨️ 正在加载用户自定义键位映射配置...", vim.log.levels.INFO, { title = "MyConfig" })
 local utils = require("utils")
 local keymap = vim.keymap.set
 
@@ -16,61 +14,75 @@ local keymap = vim.keymap.set
 -- keymap("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
 -- keymap("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
 
--- vim.notify("✓ 用户自定义键位映射配置加载完成", vim.log.levels.INFO, { title = "MyConfig" })
+-- ============================================================================
+-- VSCode Neovim 扩展键位映射
+-- ============================================================================
+if utils.is_vscode() then
+  local vscode_call = utils.vscode_call
 
--- 定义 VSCode 键位映射
-local function vscode_keymap()
-  if utils.is_vscode() then
-    local vscode_call = utils.vscode_call
-    local leader_key = "<space>"
-    -- whichkey 插件配置
-    keymap("n", leader_key, function()
-      vscode_call("whichkey.show")
-    end, { desc = "Show WhichKey" })
-    keymap("v", leader_key, function()
-      vscode_call("whichkey.show")
-    end, { desc = "Show WhichKey" })
+  -- WhichKey 插件配置
+  keymap("n", "<space>", function()
+    vscode_call("whichkey.show")
+  end, { desc = "Show WhichKey" })
+  keymap("v", "<space>", function()
+    vscode_call("whichkey.show")
+  end, { desc = "Show WhichKey" })
 
-    --[[
-    核心代码导航 (LSP 增强)
-    ]]
-    -- gf支持文件名,文件路径跳转，通过quickOpen
-    keymap("n", "gf", function()
-      local cfile = vim.fn.expand("<cfile>")
-      vim.notify("Lua 脚本已捕获: " .. cfile)
-      vim.schedule(function()
-        vim.notify("VSCode 已触发: workbench.action.quickOpen " .. cfile)
-        -- 注意：这里传入 filename 作为参数，VS Code 会把它填入搜索框
-        vscode_call("workbench.action.quickOpen", { args = cfile, wait = false })
-      end)
+  --[[
+  核心代码导航 (LSP 增强)
+  ]]
+  -- gf: 文件名/文件路径跳转，通过 quickOpen
+  keymap("n", "gf", function()
+    local cfile = vim.fn.expand("<cfile>")
+    vim.schedule(function()
+      vscode_call("workbench.action.quickOpen", { args = cfile, wait = false })
     end)
-    -- gd: 窥视定义 (Peek Definition) - 不离开当前页面查看定义
-    keymap("n", "gd", function()
-      -- wait=false 很重要，因为这只是触发 UI
-      vscode_call("editor.action.peekDefinition", { wait = false })
-    end)
-    -- gD: 跳转定义 (Go to Definition) - 真的跳过去
-    keymap("n", "gD", function()
-      vscode_call("editor.action.revealDefinition", { wait = false })
-    end)
-    -- gr: 窥视引用 (Peek References) - 查看哪里用了这个变量/组件
-    keymap("n", "gr", function()
-      vscode_call("editor.action.referenceSearch.trigger", { wait = false })
-    end)
-    -- gy: 窥视类型定义 (Peek Type Definition) - TS 开发神器
-    keymap("n", "gy", function()
-      vscode_call("editor.action.peekTypeDefinition", { wait = false })
-    end)
-    -- gs (Go Symbol): 当前文件内符号跳转 (@)
-    keymap("n", "gs", function()
-      vscode_call("workbench.action.gotoSymbol", { wait = false })
-    end)
-    -- gS (Go Symbol Workspace): 全局符号跳转 (#) - 比文件名搜索更精准
-    -- 如果你记得组件名叫 'UserCard'，但忘了文件名叫 user-card.vue 还是 index.vue，用这个最快
-    keymap("n", "gS", function()
-      vscode_call("workbench.action.showAllSymbols", { wait = false })
-    end)
-  end
+  end)
+  -- gd: 窥视定义 (Peek Definition) - 不离开当前页面查看定义
+  keymap("n", "gd", function()
+    vscode_call("editor.action.peekDefinition", { wait = false })
+  end)
+  -- gD: 跳转定义 (Go to Definition) - 真的跳过去
+  keymap("n", "gD", function()
+    vscode_call("editor.action.revealDefinition", { wait = false })
+  end)
+  -- gr: 窥视引用 (Peek References) - 查看哪里用了这个变量/组件
+  keymap("n", "gr", function()
+    vscode_call("editor.action.referenceSearch.trigger", { wait = false })
+  end)
+  -- gy: 窥视类型定义 (Peek Type Definition) - TS 开发神器
+  keymap("n", "gy", function()
+    vscode_call("editor.action.peekTypeDefinition", { wait = false })
+  end)
+  -- gs (Go Symbol): 当前文件内符号跳转 (@)
+  keymap("n", "gs", function()
+    vscode_call("workbench.action.gotoSymbol", { wait = false })
+  end)
+  -- gS (Go Symbol Workspace): 全局符号跳转 (#) - 比文件名搜索更精准
+  keymap("n", "gS", function()
+    vscode_call("workbench.action.showAllSymbols", { wait = false })
+  end)
+
+  --[[
+  编辑器操作 (utils.vscode.edit)
+  ]]
+  keymap("n", "<leader>bx", function()
+    utils.vscode.edit.close_editor()
+  end, { desc = "Close Editor" })
+  keymap("n", "<leader>,", function()
+    utils.vscode.edit.open_settings()
+  end, { desc = "Open Settings" })
+  keymap("n", "<leader>e", function()
+    utils.vscode.edit.toggle_sidebar()
+  end, { desc = "Toggle Sidebar" })
+
+  --[[
+  搜索操作 (utils.vscode.search)
+  ]]
+  keymap("n", "<leader>sf", function()
+    utils.vscode.search.find_in_files()
+  end, { desc = "Find in Files" })
+  keymap("n", "<leader>sr", function()
+    utils.vscode.search.replace_in_files()
+  end, { desc = "Replace in Files" })
 end
-
-vscode_keymap()

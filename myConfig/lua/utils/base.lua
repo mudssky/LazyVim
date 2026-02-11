@@ -116,55 +116,5 @@ M.vscode_call = function(command, opts)
 
   return true
 end
--- 检查插件是否可用
---[[
-功能: 检查指定插件模块是否可用
-输入: `plugin_name`(string) 形如 `telescope`, `bufferline`
-输出: 返回 boolean, true 表示可 `require`
-特殊: 使用 `pcall(require, ...)` 判断, 不触发加载副作用
-]]
---
-M.has_plugin = function(plugin_name)
-  local ok, _ = pcall(require, plugin_name)
-  return ok
-end
-
--- 加载插件配置
---[[
-功能: 手动加载插件配置目录下的所有 `*.lua` 并返回规格表
-输入: 无 (通过调用栈推断配置根路径)
-输出: `plugin_specs`(table) 逐文件返回的配置表组成的数组
-特殊:
-  - 依赖 `debug.getinfo` 计算调用者路径, 当调用层级变化时需调整 `getinfo` 层级
-  - 读取 `<config>/plugins/*.lua` 并以 `dofile` 执行, 捕获失败并告警
-关键流程:
-  1) 解析配置目录路径
-  2) 枚举插件文件
-  3) 逐个执行并收集返回值
-]]
---
-M.load_plugin_specs = function()
-  -- 获取插件配置目录的绝对路径
-  -- 注意：如果调用层级发生变化，这里的 debug.getinfo 可能需要调整。
-  -- 假设 load_plugin_specs 仍然被外部直接调用，debug.getinfo(2, "S") 应该指向调用者。
-  local config_path = vim.fn.fnamemodify(debug.getinfo(2, "S").source:sub(2), ":p:h:h")
-  local plugins_path = config_path .. "/plugins"
-
-  -- 手动加载所有插件配置
-  local plugin_specs = {}
-  local plugin_files = vim.fn.glob(plugins_path .. "/*.lua", false, true)
-
-  for _, file in ipairs(plugin_files) do
-    local plugin_name = vim.fn.fnamemodify(file, ":t:r")
-    local ok, plugin_config = pcall(dofile, file)
-    if ok and plugin_config then
-      table.insert(plugin_specs, plugin_config)
-    else
-      vim.notify("Failed to load plugin: " .. plugin_name, vim.log.levels.WARN)
-    end
-  end
-
-  return plugin_specs
-end
 
 return M

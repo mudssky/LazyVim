@@ -1,49 +1,56 @@
 -- 用户自定义自动命令
--- 文件位置: %LOCALAPPDATA%\nvim\lua\config\autocmds.lua
-local utils = require("utils")
+-- 文件位置: myConfig/lua/config/autocmds.lua
+
 -- 创建自动命令组
 local function augroup(name)
   return vim.api.nvim_create_augroup("myconfig_" .. name, { clear = true })
 end
 local autocmd = vim.api.nvim_create_autocmd
 
--- local  lazyvimAuGroup=  'lazyvim_'
--- 配置加载提示（已移除，避免影响启动速度）
--- vim.notify("📝 正在加载用户自定义自动命令配置...", vim.log.levels.INFO, { title = "MyConfig" })
-
--- 修改lazyvim autocmd 相关配置
-local function custom_autocmd()
-  -- vim.opt_local.spell = false
-  pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
-  -- if not ok then
-  --   -- print("lazyvim_wrap_spell 不存在")
-  -- end
-end
--- if utils.is_vscode() then
--- 所有模式都关掉拼写检查
-autocmd("FileType", {
-  group = augroup("wrap_spell"),
+-- ============================================================================
+-- VeryLazy 后处理：在 LazyVim 完成初始化后执行的一次性配置
+-- 解决上游 LazyVim 的延迟 clipboard 恢复机制覆盖用户设置的问题
+-- ============================================================================
+autocmd("User", {
+  pattern = "VeryLazy",
+  group = augroup("post_init"),
+  once = true,
   callback = function()
-    -- 确保在lazyvim的autocmd之后执行
-    vim.schedule(function()
-      custom_autocmd()
-    end)
+    -- 1) 禁用 LazyVim 拼写检查自动命令组
+    pcall(vim.api.nvim_del_augroup_by_name, "lazyvim_wrap_spell")
+
+    -- 2) SSH 环境下配置 OSC 52 剪贴板协议（需要 Neovim 0.10+）
+    local is_ssh = os.getenv("SSH_CONNECTION") ~= nil or os.getenv("SSH_CLIENT") ~= nil
+    if is_ssh and vim.fn.has("nvim-0.10") == 1 then
+      vim.g.clipboard = {
+        name = "OSC 52",
+        copy = {
+          ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+          ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+        },
+        paste = {
+          ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+          ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+        },
+      }
+    end
+
+    -- 3) 确保始终使用系统剪贴板寄存器 (+)
+    -- 必须在此时机设置，否则会被上游 LazyVim 的 lazy_clipboard 恢复机制覆盖
+    vim.opt.clipboard = "unnamedplus"
   end,
 })
 
--- 也可以用lsp的h1代替
--- 但是中文输入的情况下还是这些快捷键好用
-
--- 以下是markdown文件的快捷键设置
--- 设置Ctrl+1到Ctrl+6快捷键用于切换/设置markdown标题级别
+-- ============================================================================
+-- Markdown 标题快捷键
+-- 设置 Ctrl+1 到 Ctrl+6 快捷键用于切换/设置 markdown 标题级别
 -- 在正常模式和插入模式下都可以使用
--- 如果当前行已经是对应级别的标题，则会移除标题标记
--- 如果不是标题或者是其他级别的标题，则会设置为对应级别的标题
 -- 例如:
--- 按下Ctrl+1: 普通文本 -> # 一级标题
--- 再次按下Ctrl+1: # 一级标题 -> 普通文本
--- 按下Ctrl+2: # 一级标题 -> ## 二级标题
--- ! 注意，可能会和终端或者vscode 终端的快捷键冲突导致不生效
+--   按下 Ctrl+1: 普通文本 -> # 一级标题
+--   再次按下 Ctrl+1: # 一级标题 -> 普通文本
+--   按下 Ctrl+2: # 一级标题 -> ## 二级标题
+-- ! 注意，可能会和终端或者 vscode 终端的快捷键冲突导致不生效
+-- ============================================================================
 autocmd("FileType", {
   pattern = "markdown",
   group = augroup("markdown"),
@@ -87,7 +94,3 @@ autocmd("FileType", {
     end
   end,
 })
-
--- 禁用 LazyVim 的拼写检查自动命令组
--- vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
--- vim.notify("✓ 已禁用 LazyVim 拼写检查自动命令组 (wrap_spell)", vim.log.levels.INFO, { title = "MyConfig" })

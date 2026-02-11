@@ -7,6 +7,7 @@
 --[[
 功能: 聚合基础工具与 VSCode 相关子模块, 提供统一入口 `require("utils")`
 说明: 本模块在 `utils.base` 之上扩展 `vscode` 命名空间, 以便在 VSCode 环境下调用
+      非 VSCode 环境下不加载 vscode 子模块，避免不必要的开销
 ]]
 --
 local M = require("utils.base")
@@ -19,25 +20,24 @@ local M = require("utils.base")
   - `vscode_origin()` 返回原生 `vscode.nvim` 扩展对象, 非 VSCode 环境返回 nil
 ]]
 --
-local vscode_modules = {
-  edit = require("utils.vscode.edit"),
-  search = require("utils.vscode.search"),
-  --[[
-  功能: 获取原生 `vscode.nvim` 扩展对象
-  输入: 无
-  输出: VSCode 扩展对象或 nil
-  特殊: 仅在 VSCode 环境(`vim.g.vscode`存在)下返回有效对象
-  ]]
-  --
-  vscode_origin = function()
-    if not M.is_vscode() then
-      return nil
-    end
-    local vs = M.safe_require("vscode")
-    return vs
-  end,
-}
-
-M.vscode = vscode_modules
+if M.is_vscode() then
+  M.vscode = {
+    edit = require("utils.vscode.edit"),
+    search = require("utils.vscode.search"),
+    --[[
+    功能: 获取原生 `vscode.nvim` 扩展对象
+    输入: 无
+    输出: VSCode 扩展对象或 nil
+    特殊: 仅在 VSCode 环境(`vim.g.vscode`存在)下返回有效对象
+    ]]
+    --
+    vscode_origin = function()
+      local vs = M.safe_require("vscode")
+      return vs
+    end,
+  }
+else
+  M.vscode = {}
+end
 
 return M

@@ -1,14 +1,11 @@
 -- 用户自定义选项设置
--- 文件位置: %LOCALAPPDATA%\nvim\lua\config\options.lua
+-- 文件位置: myConfig/lua/config/options.lua
 
--- 配置加载提示（已移除，避免影响启动速度）
--- vim.notify("⚙️ 正在加载用户自定义选项配置...", vim.log.levels.INFO, { title = "MyConfig" })
 local utils = require("utils")
 local opt = vim.opt
 
--- 终端配置 - Windows 下默认使用 PowerShell 7+
-if vim.fn.has("win32") == 1 then
-  -- 设置默认 shell 为 PowerShell 7+
+-- 终端配置 - Windows 下默认使用 PowerShell 7+（需确认 pwsh 已安装）
+if vim.fn.has("win32") == 1 and vim.fn.executable("pwsh") == 1 then
   vim.opt.shell = "pwsh"
   vim.opt.shellcmdflag =
     "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';"
@@ -48,26 +45,5 @@ neovide_config()
 -- opt.termguicolors = true -- 启用真彩色
 -- opt.signcolumn = "yes" -- 始终显示符号列
 
--- vim.notify("✓ 用户自定义选项配置加载完成", vim.log.levels.INFO, { title = "MyConfig" })
-
--- 检测是否处于 SSH 环境
-local is_ssh = os.getenv("SSH_CONNECTION") ~= nil or os.getenv("SSH_CLIENT") ~= nil
-
--- 只有在 SSH 环境下，且 Neovim 版本足够时，才强制接管剪贴板配置
--- 在 VSCode 环境下不需要此配置
-if not utils.is_vscode() and is_ssh and vim.fn.has("nvim-0.10") == 1 then
-  vim.g.clipboard = {
-    name = "OSC 52",
-    copy = {
-      ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-      ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-    },
-    paste = {
-      ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
-      ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
-    },
-  }
-end
-
--- 无论在哪里，都保持使用系统剪贴板寄存器 (+)
-vim.opt.clipboard = "unnamedplus"
+-- 注意: 剪贴板配置（OSC 52 / unnamedplus）已移至 config/autocmds.lua
+-- 在 VeryLazy 事件后执行，避免被上游 LazyVim 的延迟恢复机制覆盖
